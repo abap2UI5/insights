@@ -1,8 +1,10 @@
 ---
 title: "ABAP Unit for a Screen"
 number: 24
+order: 24
 part: day
-description: "testing the class, linting the view"
+blurb: "testing the class, linting the view"
+description: "Testing an abap2UI5 app in ABAP Unit without a client, HTTP or a browser - keep the logic out of client, call the handler methods directly, lint the view."
 ---
 
 Testing a screen is usually where enthusiasm goes to die. You either drive a
@@ -20,7 +22,7 @@ methods it dispatches to read data, decide, and change attributes. Only
 other methods directly and looks at the attributes afterwards:
 
 ```abap
-CLASS zcl_app_overdue DEFINITION PUBLIC.
+CLASS zcl_sample_overdue DEFINITION PUBLIC.
 
   PUBLIC SECTION.
     INTERFACES z2ui5_if_app.
@@ -48,7 +50,7 @@ CLASS zcl_app_overdue DEFINITION PUBLIC.
 ENDCLASS.
 
 
-CLASS zcl_app_overdue IMPLEMENTATION.
+CLASS zcl_sample_overdue IMPLEMENTATION.
 
   METHOD z2ui5_if_app~main.
 
@@ -128,7 +130,7 @@ CLASS ltcl_overdue IMPLEMENTATION.
 
   METHOD only_open_and_past_due.
 
-    DATA(cut) = NEW zcl_app_overdue( ).
+    DATA(cut) = NEW zcl_sample_overdue( ).
     cut->key_date = `20260901`.
     cut->data_read( ).
 

@@ -1,8 +1,10 @@
 ---
 title: "The Frontend Knows Nothing"
 number: 6
+order: 6
 part: how
-description: "one shell for every app, and why it never needs a redeploy"
+blurb: "one shell for every app, and why it never needs a redeploy"
+description: "What the first GET delivers to the browser - a shell that renders a view and a model and knows no app - and why one shell serves every app in the system without a redeploy."
 ---
 
 The first GET request delivers a UI5 app to the browser. Worth asking what is

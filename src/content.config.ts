@@ -11,9 +11,13 @@ const essays = defineCollection({
   schema: z.object({
     title: z.string(),
     number: z.number().int().positive(),
+    // the reading order: the position in the index, not the number
+    order: z.number().int().positive(),
     part: z.enum(PART_IDS),
     // the one line under the title in the index, as the docs' table had it
-    description: z.string(),
+    blurb: z.string(),
+    // the page's meta description, where the essay has one of its own
+    description: z.string().optional(),
   }),
 });
 

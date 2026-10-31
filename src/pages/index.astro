@@ -1,34 +1,35 @@
 ---
-/* The index: what the series is in three paragraphs, the one axis everything
- * turns on, three ways in by reader, and the four parts with every essay. The
- * text of the opening is the docs' former index page, kept as it was. */
+/* The index: what the series is, the one axis everything turns on, the ways
+ * in, and the parts with every essay in reading order. The text of the
+ * opening follows the docs' former index page. */
 import Page from "../layouts/Page.astro";
 import { getCollection } from "astro:content";
 import { PARTS, PATHS } from "../lib/parts";
 
 const base = import.meta.env.BASE_URL;
-const essays = (await getCollection("essays")).sort((a, b) => a.data.number - b.data.number);
+const essays = (await getCollection("essays")).sort((a, b) => a.data.order - b.data.order);
 const byNumber = new Map(essays.map((e) => [e.data.number, e]));
 const href = (e: (typeof essays)[number]) => `${base}${e.id}/`;
-const description =
-  "The ideas behind abap2UI5 in 37 essays, each one coffee long: why it exists, how it works, what a working day looks like and where it belongs next to what SAP ships.";
+const count = essays.length;
+const description = `The ideas behind abap2UI5 in ${count} short technical essays: what it rests on, how it works under the app, a working day with it, where it belongs in the landscape and what running it takes.`;
+const start = [byNumber.get(5)!, byNumber.get(16)!];
 ---
-<Page title="abap2UI5 Insights — 37 essays on one idea" description={description} trail={[{ text: "Insights" }]}>
+<Page title={`abap2UI5 Insights — ${count} essays on one idea`} description={description} trail={[{ text: "Insights" }]}>
   <section class="hero">
     <p class="kicker">abap2UI5 Insights</p>
-    <h1>Thirty-seven short essays about one idea.</h1>
+    <h1>{count} short essays about one idea.</h1>
     <p class="lead">What happens when the ABAP server sends the <em>screen</em> instead of only the data.</p>
     <p>
-      Each one is about a coffee long, makes a single claim, and shows it in code wherever code can
-      show it. Read one on its own and it stands. Read them in order and the four parts add up to
-      the whole picture — why the framework exists, how it works under the app, what a working day
-      with it looks like, and where it belongs next to what SAP ships.
+      Each one makes a single claim and shows it in code wherever code can show it. Read one on its
+      own and it stands. Read them in order and the parts add up to the whole picture — what the
+      framework rests on, how it works under the app, what a working day with it looks like, and
+      where it belongs in the landscape. They are the “why it works like this” for a developer and
+      an architect.
     </p>
     <p>
       There is a good chance you will also pick up a few things about ABAP along the way. RTTS, the
       dialog step, <code>ENQUEUE</code>, the selection screen, the ICF node, the launchpad: this
-      framework did not invent much, it just moved a lot of familiar furniture into a browser, and
-      half the fun is recognizing the room.
+      framework did not invent much, it just moved a lot of familiar furniture into a browser.
     </p>
   </section>
 
@@ -48,23 +49,36 @@ const description =
   <section class="paths" aria-labelledby="ways-in">
     <h2 id="ways-in">Three ways in</h2>
     <div class="path-grid">
-      {PATHS.map((p) => (
+      {PATHS.map((p) => p.href ? (
+        <a class="path" href={p.href}>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="who">{p.who}</span>
+          <h3>{p.title}</h3>
+          <p>{p.lead}</p>
+          <span class="meta">abap2ui5.github.io/why</span>
+        </a>
+      ) : (
         <a class="path" href={`${base}for/${p.id}/`}>
           <span class="arrow" aria-hidden="true">→</span>
           <span class="who">{p.who}</span>
           <h3>{p.title}</h3>
           <p>{p.lead}</p>
           <ol aria-label="Essays on this path">
-            {p.numbers.map((n) => <li>#{n}</li>)}
+            {p.numbers!.map((n) => <li>#{n}</li>)}
           </ol>
-          <span class="meta">{p.numbers.length} essays · about {p.minutes} minutes</span>
+          <span class="meta">{p.numbers!.length} essays</span>
         </a>
       ))}
     </div>
   </section>
 
   <section class="parts" aria-labelledby="all">
-    <h2 id="all">All thirty-seven, in order</h2>
+    <h2 id="all">All {count}, in reading order</h2>
+    <p class="origin start">
+      New here? Start with <a href={href(start[0])}>#5 {start[0].data.title}</a>, the one idea
+      everything else is a consequence of, and <a href={href(start[1])}>#16 {start[1].data.title}</a>,
+      the mental model every app is written against.
+    </p>
     {PARTS.map((part) => (
       <section class="part" id={part.id}>
         <header>
@@ -77,7 +91,7 @@ const description =
               <a href={href(e)}>
                 <span class="n">#{e.data.number}</span>
                 <span class="t">{e.data.title}</span>
-                <span class="d">{e.data.description}</span>
+                <span class="d">{e.data.blurb}</span>
               </a>
             </li>
           ))}
@@ -85,8 +99,7 @@ const description =
       </section>
     ))}
     <p class="origin">
-      New here and in a hurry? Start with <a href={href(byNumber.get(2)!)}>#2 The Cost of a Screen</a> — it
-      is the one that explains why anybody wrote this thing. The essays on how it works grew out of {" "}
+      The essays on how it works grew out of{" "}
       <a href="https://community.sap.com/t5/technology-blog-posts-by-members/abap2ui5-7-technical-background-under-the-hood-of-abap2ui5/ba-p/13566459">Under the Hood of abap2UI5</a>{" "}
       on the SAP Community, the long version in one piece.
     </p>

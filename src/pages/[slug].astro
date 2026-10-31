@@ -8,15 +8,15 @@ import { getCollection, render } from "astro:content";
 import { PARTS, partById } from "../lib/parts";
 
 export async function getStaticPaths() {
-  const essays = (await getCollection("essays")).sort((a, b) => a.data.number - b.data.number);
+  const essays = (await getCollection("essays")).sort((a, b) => a.data.order - b.data.order);
   return essays.map((entry, i) => ({
     params: { slug: entry.id },
-    props: { entry, prev: essays[i - 1], next: essays[i + 1] },
+    props: { entry, prev: essays[i - 1], next: essays[i + 1], total: essays.length },
   }));
 }
 
 const base = import.meta.env.BASE_URL;
-const { entry, prev, next } = Astro.props;
+const { entry, prev, next, total } = Astro.props;
 const { Content } = await render(entry);
 const part = partById(entry.data.part);
 const nextPart = next && next.data.part !== entry.data.part ? partById(next.data.part) : undefined;
@@ -27,7 +27,7 @@ const partIndex = PARTS.findIndex((p) => p.id === part.id) + 1;
 ---
 <Page
   title={`${title} — abap2UI5 Insights`}
-  description={entry.data.description}
+  description={entry.data.description ?? entry.data.blurb}
   trail={[{ text: "Insights", href: base }, { text: title }]}
   measure="article"
   edit={`src/content/essays/${entry.id}.md`}
@@ -36,8 +36,8 @@ const partIndex = PARTS.findIndex((p) => p.id === part.id) + 1;
     <header>
       <a class="part-link" href={`${base}#${part.id}`}>Part {partIndex} · {part.title}</a>
       <h1><span class="num">#{entry.data.number}</span>{entry.data.title}</h1>
-      <p class="standfirst">{entry.data.description.charAt(0).toUpperCase() + entry.data.description.slice(1)}.</p>
-      <p class="reading">{minutes} min read · essay {entry.data.number} of 37</p>
+      <p class="standfirst">{entry.data.blurb.charAt(0).toUpperCase() + entry.data.blurb.slice(1)}.</p>
+      <p class="reading">{minutes} min read · {entry.data.order} of {total} in reading order</p>
     </header>
     <div class="prose">
       <Content />

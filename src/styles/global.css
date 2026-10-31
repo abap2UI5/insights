@@ -183,6 +183,7 @@ code, pre, kbd { font-family: var(--mono); }
   .essays .d { grid-column: auto; }
 }
 .origin { margin: 40px 0 0; color: var(--muted); font-size: 15px; }
+.origin.start { margin: -4px 0 40px; max-width: 46rem; }
 
 /* ---- an essay --------------------------------------------------------------- */
 .measure-article { max-width: calc(var(--measure) + 48px); }
