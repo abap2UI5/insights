@@ -1,0 +1,48 @@
+---
+title: "RAP or abap2UI5?"
+number: 33
+part: where
+description: "behavior against screen"
+---
+
+The honest answer, before the table: most systems end up with both, and the
+question is never "which framework" but "which one for this screen".
+
+| | RAP with Fiori Elements | abap2UI5 |
+|---|---|---|
+| **Backend** | CDS views, behavior definitions, OData V4 | ABAP classes producing an XML view and a JSON model |
+| **Frontend** | a Fiori Elements app per service | one static UI5 shell, shared by every app |
+| **UI definition** | UI annotations on CDS | XML views written in ABAP |
+| **Data model** | fixed at design time in CDS | design time, or at runtime from internal tables |
+| **Drafts** | RAP drafts, on the model | serialization, on the app |
+| **Communication** | OData V4 — metadata, entities, actions | HTTP, two strings per request |
+| **Deployment** | frontend and backend transported separately | activating the class |
+
+Here is the split that holds up in practice.
+
+**Reach for RAP when the behavior matters more than the screen.** A
+transactional object with validations, determinations, authorizations and draft
+handling — and more than one consumer for it. The moment a second client exists,
+or is likely to, the behavior needs to live somewhere that is not a UI, and RAP
+is where SAP put it. Standard CRUD over a stable model, close to what a list
+report or an object page already does, is the case it was built for and the
+case where it costs the least. Fighting that with a hand-built screen is
+choosing the harder road for no prize.
+
+**Reach for abap2UI5 when the screen is the deliverable.** One consumer, one
+purpose, and often a short life: an operations tool, a correction screen, a
+form somebody needs by Thursday, a dashboard for one team. Also whenever the
+shape is not known until runtime — a table whose columns come from RTTI,
+[#1](/insights/01-somewhere-on-the-way-to-ui5/) — or when the screen
+needs a control the annotation vocabulary does not reach. And
+on an older release, where RAP is not available at all.
+
+**The two are not exclusive, and this is the part worth remembering.** An
+abap2UI5 app calls a RAP business object through EML like any other consumer.
+The validations still run, the draft still works, the authorizations still
+apply. So a screen that Fiori Elements cannot shape the way it needs to be
+shaped is not a reason to abandon the business object — only a reason to put a
+different UI in front of it.
+
+Rule of thumb: model the behavior once, in RAP, if more than one thing will
+use it. Build the screen wherever it is cheapest.

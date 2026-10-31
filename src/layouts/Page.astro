@@ -1,0 +1,91 @@
+---
+/* The document around every page: head, the family's top line, the page, the
+ * foot. The top line is CONVENTION.md §1 of abap2UI5/abap2UI5.github.io: the
+ * logo and the word leading home, then the breadcrumb - Home / Insights on
+ * the index, Home / Insights / #5 UI5 Over-the-Wire on an essay - with only
+ * the last entry marked.
+ *
+ * THE POLICY. GitHub Pages sets no headers of ours, so the Content-Security-
+ * Policy is a <meta>. The page runs no script at all and carries no inline
+ * style; test/site.test.mjs holds every built page to it. */
+import "../styles/global.css";
+
+interface Crumb { text: string; href?: string }
+interface Props {
+  title: string;
+  description: string;
+  /* the trail below Home; the last entry is the current page */
+  trail: Crumb[];
+  /* an <article> gets the narrow measure, the index the wide one */
+  measure?: "article" | "index";
+  /* the GitHub path of the source, for "Edit this page" */
+  edit?: string;
+}
+const { title, description, trail, measure = "index", edit } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const HOME = "https://abap2ui5.github.io/";
+const REPO = "https://github.com/abap2UI5/insights";
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "img-src 'self'",
+  "font-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'none'",
+].join("; ");
+const last = trail.length - 1;
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content={CSP}>
+<title>{title}</title>
+<meta name="description" content={description}>
+<link rel="canonical" href={canonical}>
+<link rel="alternate" type="application/rss+xml" title="abap2UI5 Insights" href={`${base}rss.xml`}>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="abap2UI5 Insights">
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:url" content={canonical}>
+<meta property="og:image" content={new URL(`${base}og-image.png`, Astro.site).href}>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href={`${base}favicon.png`}>
+<link rel="apple-touch-icon" href={`${base}apple-touch-icon.png`}>
+<link rel="preload" href={`${base}fonts/inter-roman-latin.woff2`} as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="topline wrap">
+  <nav class="sites" aria-label="Breadcrumb">
+    <a class="brand" href={HOME}><img src={`${base}logo.png`} alt="" width="22" height="22"> abap2UI5</a>
+    <a href={HOME}>Home</a>
+    {trail.map((crumb, i) => (
+      <>
+        <span class="sep" aria-hidden="true">/</span>
+        {i === last
+          ? <span aria-current="page">{crumb.text}</span>
+          : <a href={crumb.href}>{crumb.text}</a>}
+      </>
+    ))}
+  </nav>
+  <nav class="elsewhere" aria-label="Elsewhere">
+    <a href="https://abap2ui5.github.io/docs/">Docs</a>
+    <a href="https://abap2ui5.github.io/playground/">Playground</a>
+  </nav>
+</div>
+<main id="main" class={`wrap measure-${measure}`}>
+  <slot />
+</main>
+<footer class="foot wrap">
+  <span><a href={HOME}>abap2UI5</a> · MIT licensed · <a href="https://abap2ui5.github.io/docs/">Documentation</a> · <a href={`${base}rss.xml`}>RSS</a>{edit && <> · <a href={`${REPO}/edit/main/${edit}`}>Edit this page</a></>}</span>
+  <a class="mail" href="mailto:contact@abap2UI5.org">contact@abap2UI5.org</a>
+</footer>
+</body>
+</html>

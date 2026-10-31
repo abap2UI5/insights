@@ -1,0 +1,23 @@
+{
+  "name": "abap2ui5-insights",
+  "version": "1.0.0",
+  "private": true,
+  "description": "abap2UI5 Insights - 37 essays on one idea, https://abap2ui5.github.io/insights/",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "migrate": "node scripts/migrate.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "astro": "7.3.8",
+    "prismjs": "^1.30.0"
+  }
+}
