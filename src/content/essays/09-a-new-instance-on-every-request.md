@@ -1,8 +1,10 @@
 ---
 title: "A New Instance on Every Request"
 number: 9
+order: 9
 part: how
-description: "serialized state, and what that asks of the class"
+blurb: "serialized state, and what that asks of the class"
+description: "Every request is a fresh instance of the app class - how z2ui5_t_01 carries the serialized instance forward, which attributes survive, and why a large attribute costs every click."
 ---
 
 Every request lands on a fresh instance of the app class. No session holds the

@@ -1,8 +1,10 @@
 ---
 title: "From ITS to abap2UI5"
 number: 32
+order: 32
 part: where
-description: "twenty-seven years in one line"
+blurb: "twenty-seven years in one line"
+description: "Twenty-seven years of SAP user interfaces in one line - ITS, BSP, Web Dynpro, UI5 Freestyle, RAP, abap2UI5 - and which move did not reverse."
 ---
 
 Twenty-seven years of SAP user interfaces, laid out end to end — because the

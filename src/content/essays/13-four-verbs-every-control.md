@@ -1,8 +1,10 @@
 ---
 title: "Four Verbs, Every Control"
 number: 13
+order: 13
 part: how
-description: "why the view builder knows no controls"
+blurb: "why the view builder knows no controls"
+description: "Why z2ui5_cl_ui5_view_builder has four methods - ele, tag, a, end - instead of one per control, what the completion list cost, and what the linter gives back."
 ---
 
 The first view builder in abap2UI5 had one method per UI5 control. `button( )`,
@@ -43,5 +45,3 @@ to be found by a colleague on a 2019 system, three weeks later.
 
 The completion list was a way to avoid reading the SDK. Coverage of the whole
 API is worth more than a shortcut around part of it.
-
-Four verbs that name no control can build every control.

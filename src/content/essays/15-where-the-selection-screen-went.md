@@ -1,8 +1,10 @@
 ---
 title: "Where the Selection Screen Went"
 number: 15
+order: 15
 part: how
-description: "the variable and the field are one declaration again"
+blurb: "the variable and the field are one declaration again"
+description: "What PARAMETERS did that the browser lost - the variable and the field as one declaration - and how _bind( ) puts them back together."
 ---
 
 Long before anyone said "full-stack" in a job ad, ABAP had this:
@@ -48,6 +50,3 @@ dishonest — the layout is written by hand here, because the screen is UI5 and
 UI5 has a great deal more to say than a selection screen did. What comes back
 is the other half: one place where the data lives, and no service between the
 field and the variable.
-
-The selection screen's best idea was never the screen. It was that the
-variable and the field were the same declaration.

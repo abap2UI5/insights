@@ -1,25 +1,27 @@
 #!/usr/bin/env node
-// Bring the 37 essays over from the docs repository, once.
+// Bring the essays over from the docs repository.
 //
 //   node scripts/migrate.mjs [path/to/abap2UI5/docs]      (default: ../docs)
 //
 // What it does, and nothing else:
-//   1. reads docs/advanced/insights/index.md for the part each essay is in
-//      and its one-line blurb, and NN-slug.md for the text;
-//   2. writes src/content/essays/NN-slug.md with a frontmatter (title, number,
-//      part, description) and without the H1 - the page renders the title;
-//   3. rewrites the links: a sister essay becomes /insights/<slug>/, a docs page
-//      becomes the absolute https://abap2ui5.github.io/docs/... address, the
-//      use-case diagrams move under /insights/use_cases/;
-//   4. copies the SVGs from docs/public/insights/ and the six use-case SVGs
-//      into public/;
-//   5. writes migration/docs-stubs/: one page per essay for the docs
-//      repository to keep at the old address, redirecting here (see
-//      migration/DOCS-REPO.md).
+//   1. reads docs/advanced/insights/index.md: the parts (its ## headings), the
+//      order the essays are read in (the order of the table rows, which is not
+//      the order of the numbers) and each essay's one-line blurb;
+//   2. empties src/content/essays/ and writes NN-slug.md for every essay the
+//      index lists, with a frontmatter (title, number, order, part, blurb,
+//      description) and without the H1 - the page renders the title;
+//   3. rewrites the links: a sister essay becomes /insights/<slug>/, a page of
+//      the manual the absolute https://abap2ui5.github.io/docs/... address, the
+//      use-case diagrams move under /insights/use_cases/, and VitePress's
+//      {target="_self"} goes - this site is no SPA, a link is a link;
+//   4. copies the SVGs from docs/public/insights/ and the use-case SVGs into
+//      public/.
 //
+// The parts' names and leads live in src/lib/parts.ts; this script only checks
+// that every heading of the index has an id there and stops when one has not.
 // It is safe to run twice: everything it writes it writes whole.
 
-import { readFileSync, writeFileSync, readdirSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, mkdirSync, copyFileSync, existsSync, rmSync } from "node:fs";
 import { join, dirname, basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -28,7 +30,6 @@ const DOCS = process.argv[2] ? resolve(process.cwd(), process.argv[2]) : join(RO
 const SRC = join(DOCS, "docs", "advanced", "insights");
 const OUT = join(ROOT, "src", "content", "essays");
 const PUBLIC = join(ROOT, "public");
-const STUBS = join(ROOT, "migration", "docs-stubs");
 const DOCS_URL = "https://abap2ui5.github.io/docs";
 const HERE = "/insights/";
 
@@ -36,121 +37,101 @@ if (!existsSync(SRC)) {
   console.error(`migrate: no essays at ${SRC}. Pass the path of the docs repository.`);
   process.exit(1);
 }
-for (const d of [OUT, join(PUBLIC, "use_cases"), STUBS]) mkdirSync(d, { recursive: true });
 
-/* ---- 1. the index: part and blurb per slug ------------------------------- */
-const PART_BY_HEADING = { Why: "why", "How It Works": "how", "A Working Day": "day", "Where It Belongs": "where" };
+/* the headings of the index and the id each part has in src/lib/parts.ts */
+const PART_BY_HEADING = {
+  "What It Rests On": "rests",
+  "The First Example": "example",
+  "How It Works": "how",
+  "A Working Day": "day",
+  "Where It Belongs in the Landscape": "where",
+  "Running It": "running",
+};
+
+/* ---- 1. the index ---------------------------------------------------------- */
 const index = readFileSync(join(SRC, "index.md"), "utf8");
-const meta = new Map(); // slug -> { part, description }
+const meta = new Map(); // slug -> { part, blurb, order }
 let part = null;
+let order = 0;
 for (const line of index.split("\n")) {
   const h = line.match(/^## (.+?)\s*$/);
-  if (h) { part = PART_BY_HEADING[h[1]] ?? null; continue; }
+  if (h) {
+    part = PART_BY_HEADING[h[1]];
+    if (!part) {
+      console.error(`migrate: the index has a part "${h[1]}" that src/lib/parts.ts and PART_BY_HEADING do not know.`);
+      process.exit(1);
+    }
+    continue;
+  }
   const row = line.match(/^\| \[#\d+ .+?\]\(\/advanced\/insights\/([^)#]+)\) \| (.+?) \|\s*$/);
-  if (row && part) meta.set(row[1], { part, description: row[2].replace(/`/g, "").trim() });
+  if (row && part) meta.set(row[1], { part, blurb: row[2].replace(/`/g, "").trim(), order: ++order });
 }
-if (meta.size !== 37) console.warn(`migrate: the index names ${meta.size} essays, expected 37`);
 
-/* ---- 2./3. the essays ---------------------------------------------------- */
+/* ---- 2./3. the essays -------------------------------------------------------- */
 const yaml = (s) => JSON.stringify(s); // a JSON string is a valid YAML scalar
 
 function rewriteLinks(md) {
-  return md.replace(/\]\((\/[^)\s]+)\)/g, (m, target) => {
-    const [path, hash] = target.split("#");
-    const anchor = hash ? `#${hash}` : "";
-    // a sister essay
-    let e = path.match(/^\/advanced\/insights\/([^/]+?)(?:\.html)?$/);
-    if (e) return `](${HERE}${e[1]}/${anchor})`;
-    // a diagram of the series: already under /insights/
-    if (path.startsWith(HERE)) return m;
-    // a use-case diagram, moved here
-    e = path.match(/^\/advanced\/use_cases\/([^/]+\.svg)$/);
-    if (e) return `](${HERE}use_cases/${e[1]})`;
-    // everything else is a page of the manual
-    return `](${DOCS_URL}${path}${anchor})`;
-  });
+  return md
+    .replace(/\{target="_self"\}/g, "")
+    .replace(/\]\((\/[^)\s]+)\)/g, (m, target) => {
+      const [path, hash] = target.split("#");
+      const anchor = hash ? `#${hash}` : "";
+      let e = path.match(/^\/advanced\/insights\/([^/]+?)(?:\.html)?$/);
+      if (e) return `](${HERE}${e[1]}/${anchor})`;
+      if (path === "/advanced/insights/") return `](${HERE}${anchor})`;
+      if (path.startsWith(HERE)) return m;
+      e = path.match(/^\/advanced\/use_cases\/([^/]+\.svg)$/);
+      if (e) return `](${HERE}use_cases/${e[1]})`;
+      return `](${DOCS_URL}${path}${anchor})`;
+    });
 }
 
-const files = readdirSync(SRC).filter((f) => /^\d{2}-.+\.md$/.test(f)).sort();
+rmSync(OUT, { recursive: true, force: true });
+mkdirSync(OUT, { recursive: true });
 let n = 0;
-for (const file of files) {
+for (const file of readdirSync(SRC).filter((f) => /^\d{2}-.+\.md$/.test(f)).sort()) {
   const slug = basename(file, ".md");
-  const number = Number(slug.slice(0, 2));
-  const text = readFileSync(join(SRC, file), "utf8");
-  const h1 = text.match(/^# #(\d+) (.+?)\s*$/m);
-  if (!h1) { console.warn(`migrate: ${file} has no "# #N Title" heading, skipped`); continue; }
-  const title = h1[2];
   const m = meta.get(slug);
   if (!m) { console.warn(`migrate: ${file} is not in index.md, skipped`); continue; }
+  let text = readFileSync(join(SRC, file), "utf8");
+  let description;
+  const fm = text.match(/^---\n([\s\S]*?)\n---\n/);
+  if (fm) {
+    const d = fm[1].match(/^description:\s*(.+)$/m);
+    if (d) description = d[1].trim().replace(/^"(.*)"$/, "$1").replace(/\\"/g, '"');
+    text = text.slice(fm[0].length);
+  }
+  const h1 = text.match(/^# #(\d+) (.+?)\s*$/m);
+  if (!h1) { console.warn(`migrate: ${file} has no "# #N Title" heading, skipped`); continue; }
   const body = text.replace(h1[0] + "\n", "").replace(/^\s*\n/, "");
-  const out = `---
-title: ${yaml(title)}
-number: ${number}
-part: ${m.part}
-description: ${yaml(m.description)}
----
-
-${rewriteLinks(body)}`;
-  writeFileSync(join(OUT, file), out);
-
-  /* 5. the stub the docs repository keeps at the old address */
-  const here = `https://abap2ui5.github.io${HERE}${slug}/`;
   writeFileSync(
-    join(STUBS, file),
+    join(OUT, file),
     `---
-title: "#${number} ${title.replace(/"/g, '\\"')}"
-description: ${yaml(m.description)}
-head:
-  - - meta
-    - http-equiv: refresh
-      content: "0; url=${here}"
-  - - link
-    - rel: canonical
-      href: ${here}
-sidebar: false
----
+title: ${yaml(h1[2])}
+number: ${Number(h1[1])}
+order: ${m.order}
+part: ${m.part}
+blurb: ${yaml(m.blurb)}
+${description ? `description: ${yaml(description)}\n` : ""}---
 
-# #${number} ${title}
-
-This essay has moved to [abap2UI5 Insights](${here}){target="_self"}.
-`,
+${rewriteLinks(body)}`,
   );
   n++;
 }
+if (n !== meta.size) console.warn(`migrate: the index names ${meta.size} essays, ${n} written`);
 console.log(`migrate: ${n} essays written to src/content/essays/`);
 
-/* ---- 4. the diagrams ----------------------------------------------------- */
+/* ---- 4. the diagrams --------------------------------------------------------- */
+mkdirSync(join(PUBLIC, "use_cases"), { recursive: true });
 let svgs = 0;
-for (const f of readdirSync(join(DOCS, "docs", "public", "insights"))) {
-  if (!f.endsWith(".svg")) continue;
-  copyFileSync(join(DOCS, "docs", "public", "insights", f), join(PUBLIC, f));
-  svgs++;
-}
-for (const f of readdirSync(join(DOCS, "docs", "public", "advanced", "use_cases"))) {
-  if (!f.endsWith(".svg")) continue;
-  copyFileSync(join(DOCS, "docs", "public", "advanced", "use_cases", f), join(PUBLIC, "use_cases", f));
-  svgs++;
+for (const [from, to] of [
+  [join(DOCS, "docs", "public", "insights"), PUBLIC],
+  [join(DOCS, "docs", "public", "advanced", "use_cases"), join(PUBLIC, "use_cases")],
+]) {
+  for (const f of readdirSync(from)) {
+    if (!f.endsWith(".svg")) continue;
+    copyFileSync(join(from, f), join(to, f));
+    svgs++;
+  }
 }
 console.log(`migrate: ${svgs} SVGs copied to public/`);
-
-/* the index stub too */
-writeFileSync(
-  join(STUBS, "index.md"),
-  `---
-title: Blogs
-head:
-  - - meta
-    - http-equiv: refresh
-      content: "0; url=https://abap2ui5.github.io${HERE}"
-  - - link
-    - rel: canonical
-      href: https://abap2ui5.github.io${HERE}
-sidebar: false
----
-
-# Blogs
-
-The essays have a site of their own now: [abap2UI5 Insights](https://abap2ui5.github.io${HERE}){target="_self"}.
-`,
-);
-console.log(`migrate: ${n + 1} redirect stubs written to migration/docs-stubs/`);

@@ -20,9 +20,11 @@ const pages = walk(DIST).filter((f) => f.endsWith(".html"));
 const read = (f) => fs.readFileSync(f, "utf8");
 const home = read(path.join(DIST, "index.html"));
 
+const slugs = fs.readdirSync(ESSAYS).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""));
+const numbers = slugs.map((s) => Number(s.slice(0, 2)));
+
 test("every essay in src/content/essays has a page at its own slug", () => {
-  const slugs = fs.readdirSync(ESSAYS).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""));
-  assert.equal(slugs.length, 37, "thirty-seven essays");
+  assert.ok(slugs.length >= 30, `${slugs.length} essays`);
   for (const slug of slugs) assert.ok(fs.existsSync(path.join(DIST, slug, "index.html")), `${BASE}${slug}/`);
 });
 
@@ -69,13 +71,18 @@ test("the family's top line: the brand leads home, the breadcrumb marks the page
   }
 });
 
-test("the index lists all thirty-seven and the three ways in", () => {
-  assert.equal((home.match(/class="essays"/g) || []).length, 4, "four parts");
-  for (let n = 1; n <= 37; n++) assert.match(home, new RegExp(`<span class="n">#${n}</span>`), `#${n}`);
-  for (const p of ["developer", "architect", "decision"]) {
+test("the index lists every essay, every part and the ways in", () => {
+  assert.equal((home.match(/class="essays"/g) || []).length, 6, "six parts");
+  for (const n of numbers) assert.match(home, new RegExp(`<span class="n">#${n}</span>`), `#${n}`);
+  assert.match(home, /class="path" href="https:\/\/abap2ui5\.github\.io\/why\/"/, "the case for using it is the why-site's");
+  for (const p of ["developer", "architect"]) {
     assert.match(home, new RegExp(`href="${BASE}for/${p}/"`));
     assert.ok(fs.existsSync(path.join(DIST, "for", p, "index.html")), `${BASE}for/${p}/`);
   }
+});
+
+test("no VitePress attribute syntax leaks into a page", () => {
+  for (const file of pages) assert.doesNotMatch(read(file), /\{target=/, path.relative(DIST, file));
 });
 
 test("the links to the manual are absolute and name no page of this site", () => {
@@ -88,5 +95,5 @@ test("the links to the manual are absolute and name no page of this site", () =>
 test("the canonical address is the published one, and the feed is there", () => {
   assert.match(home, /<link rel="canonical" href="https:\/\/abap2ui5\.github\.io\/insights\/">/);
   const rss = read(path.join(DIST, "rss.xml"));
-  assert.equal((rss.match(/<item>/g) || []).length, 37);
+  assert.equal((rss.match(/<item>/g) || []).length, slugs.length);
 });

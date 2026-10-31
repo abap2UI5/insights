@@ -1,8 +1,10 @@
 ---
 title: "One Click, One Request"
 number: 16
+order: 16
 part: day
-description: "PBO, PAI, and the dispatch in main( )"
+blurb: "PBO, PAI, and the dispatch in main( )"
+description: "The mental model under every abap2UI5 app - one click is one request and one call to main( ) on a fresh instance - and the three questions main( ) dispatches on, in order."
 ---
 
 The mental model that everything else in the framework rests on fits in one

@@ -1,8 +1,10 @@
 ---
 title: "MESSAGE Still Works"
 number: 20
+order: 20
 part: day
-description: "messages, exceptions, translation"
+blurb: "messages, exceptions, translation"
+description: "Toasts, message boxes, sy, BAPIRET2 and exception objects - what carries over from classic messages, what an escaped exception does to the roundtrip, and check_hide_error_details."
 ---
 
 An ABAP developer has thirty years of habits around messages, and the good news
@@ -64,6 +66,3 @@ developer wants and considerably more than a browser should get.
 `check_hide_error_details` in the
 [user exit](https://abap2ui5.github.io/docs/advanced/extensibility/user_exits) turns the body into a bare
 *Internal Server Error* and leaves everything else as it is.
-
-The message classes, the texts and the translation stay. Only the dump
-looks different.

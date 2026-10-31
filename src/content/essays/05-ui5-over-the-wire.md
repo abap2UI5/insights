@@ -1,8 +1,10 @@
 ---
 title: "UI5 Over-the-Wire"
 number: 5
+order: 5
 part: how
-description: "every request answered with two strings"
+blurb: "every request answered with two strings"
+description: "The one idea under abap2UI5: the backend answers every request with two strings, a UI5 XML view and its JSON model, and the browser renders them - UI5 Over-the-Wire."
 ---
 
 A UI5 freestyle app is a single-page application. The view is deployed with the
