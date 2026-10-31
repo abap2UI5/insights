@@ -1,0 +1,94 @@
+---
+/* The index: what the series is in three paragraphs, the one axis everything
+ * turns on, three ways in by reader, and the four parts with every essay. The
+ * text of the opening is the docs' former index page, kept as it was. */
+import Page from "../layouts/Page.astro";
+import { getCollection } from "astro:content";
+import { PARTS, PATHS } from "../lib/parts";
+
+const base = import.meta.env.BASE_URL;
+const essays = (await getCollection("essays")).sort((a, b) => a.data.number - b.data.number);
+const byNumber = new Map(essays.map((e) => [e.data.number, e]));
+const href = (e: (typeof essays)[number]) => `${base}${e.id}/`;
+const description =
+  "The ideas behind abap2UI5 in 37 essays, each one coffee long: why it exists, how it works, what a working day looks like and where it belongs next to what SAP ships.";
+---
+<Page title="abap2UI5 Insights — 37 essays on one idea" description={description} trail={[{ text: "Insights" }]}>
+  <section class="hero">
+    <p class="kicker">abap2UI5 Insights</p>
+    <h1>Thirty-seven short essays about one idea.</h1>
+    <p class="lead">What happens when the ABAP server sends the <em>screen</em> instead of only the data.</p>
+    <p>
+      Each one is about a coffee long, makes a single claim, and shows it in code wherever code can
+      show it. Read one on its own and it stands. Read them in order and the four parts add up to
+      the whole picture — why the framework exists, how it works under the app, what a working day
+      with it looks like, and where it belongs next to what SAP ships.
+    </p>
+    <p>
+      There is a good chance you will also pick up a few things about ABAP along the way. RTTS, the
+      dialog step, <code>ENQUEUE</code>, the selection screen, the ICF node, the launchpad: this
+      framework did not invent much, it just moved a lot of familiar furniture into a browser, and
+      half the fun is recognizing the room.
+    </p>
+  </section>
+
+  <figure class="axis">
+    <img src={`${base}00-where-the-view-lives.svg`} alt="Three ways to put a UI5 screen in front of a user on an ABAP stack, ordered by the moment the view is fixed: UI5 Freestyle at build time, RAP with Fiori Elements at activation time, abap2UI5 when the request is answered." width="960" height="300">
+    <figcaption>One axis: when the definition of the screen stops being changeable.</figcaption>
+  </figure>
+  <p>
+    Three ways to put a UI5 screen in front of a user on an ABAP stack, all three rendering in the
+    browser with the same control library. <strong>UI5 Freestyle</strong> fixes the view at build
+    time, as a file in a frontend project. <strong>RAP with Fiori Elements</strong> fixes it at
+    activation time, as annotations on CDS. <strong>abap2UI5</strong> fixes it when the request is
+    answered, as a string an ABAP class produced for this request — and the next request may answer
+    differently. Everything else follows from where the view sits.
+  </p>
+
+  <section class="paths" aria-labelledby="ways-in">
+    <h2 id="ways-in">Three ways in</h2>
+    <div class="path-grid">
+      {PATHS.map((p) => (
+        <a class="path" href={`${base}for/${p.id}/`}>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="who">{p.who}</span>
+          <h3>{p.title}</h3>
+          <p>{p.lead}</p>
+          <ol aria-label="Essays on this path">
+            {p.numbers.map((n) => <li>#{n}</li>)}
+          </ol>
+          <span class="meta">{p.numbers.length} essays · about {p.minutes} minutes</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="parts" aria-labelledby="all">
+    <h2 id="all">All thirty-seven, in order</h2>
+    {PARTS.map((part) => (
+      <section class="part" id={part.id}>
+        <header>
+          <h3>{part.title}</h3>
+          <p class="lead">{part.lead}</p>
+        </header>
+        <ol class="essays">
+          {essays.filter((e) => e.data.part === part.id).map((e) => (
+            <li>
+              <a href={href(e)}>
+                <span class="n">#{e.data.number}</span>
+                <span class="t">{e.data.title}</span>
+                <span class="d">{e.data.description}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+    <p class="origin">
+      New here and in a hurry? Start with <a href={href(byNumber.get(2)!)}>#2 The Cost of a Screen</a> — it
+      is the one that explains why anybody wrote this thing. The essays on how it works grew out of {" "}
+      <a href="https://community.sap.com/t5/technology-blog-posts-by-members/abap2ui5-7-technical-background-under-the-hood-of-abap2ui5/ba-p/13566459">Under the Hood of abap2UI5</a>{" "}
+      on the SAP Community, the long version in one piece.
+    </p>
+  </section>
+</Page>
