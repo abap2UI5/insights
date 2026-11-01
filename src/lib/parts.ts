@@ -1,4 +1,4 @@
-// The parts of the series, in reading order, and the ways in. The essays carry
+// The parts of the series, in reading order. The essays carry
 // their part in the frontmatter; everything else about a part - its name, its
 // one line, where it sits - lives here, once.
 
@@ -45,40 +45,3 @@ export const PARTS: Part[] = [
 ];
 
 export const partById = (id: PartId): Part => PARTS.find((p) => p.id === id)!;
-
-/* The ways in. A path lists essays by number, in the order to read them.
- * The series is the technical "why it works like this"; the case for using
- * it - cost, who runs it, the decision - is the why-site's, so the third way
- * in leads there (`href`) instead of picking essays. */
-export interface Path {
-  id: string;
-  who: string;
-  title: string;
-  lead: string;
-  numbers?: number[];
-  href?: string;
-}
-
-export const PATHS: Path[] = [
-  {
-    id: "developer",
-    who: "For developers",
-    title: "How it works, end to end",
-    lead: "Two strings per request, one handler, a new instance every time — and the one click, one request model every app is written against, and where its LUW ends.",
-    numbers: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 22],
-  },
-  {
-    id: "architect",
-    who: "For architects",
-    title: "Where it belongs, and running it",
-    lead: "Releases from 7.02 to ABAP Cloud, clean core, on-stack or side-by-side, RAP or freestyle — then the threat model, the sizing and the upgrade.",
-    numbers: [6, 7, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41],
-  },
-  {
-    id: "decision",
-    who: "Deciding whether to use it?",
-    title: "The case for abap2UI5",
-    lead: "What it costs, who runs it, what your organization keeps and when to pick something else — on the page written for that question.",
-    href: "https://abap2ui5.github.io/why/",
-  },
-];

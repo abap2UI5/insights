@@ -1,11 +1,11 @@
 ---
 /* The index: what the series is, the one axis everything turns on, the ways
- * in, and the parts with every essay in reading order. One column at the
+ * parts with every essay in reading order. One column at the
  * measure of an essay, so the index and an essay share one left edge and one
  * width. The text of the opening follows the docs' former index page. */
 import Page from "../layouts/Page.astro";
 import { getCollection } from "astro:content";
-import { PARTS, PATHS } from "../lib/parts";
+import { PARTS } from "../lib/parts";
 
 const base = import.meta.env.BASE_URL;
 const essays = (await getCollection("essays")).sort((a, b) => a.data.number - b.data.number);
@@ -65,31 +65,6 @@ const AXIS = [
     answered, as a string an ABAP class produced for this request — and the next request may answer
     differently. Everything else follows from where the view sits.
   </p>
-
-  <section class="paths" aria-labelledby="ways-in">
-    <h2 id="ways-in">Three ways in</h2>
-    <div class="path-list">
-      {PATHS.map((p) => {
-        if (p.href) return (
-          <a class="path" href={p.href}>
-            <span class="who">{p.who}</span>
-            <h3>{p.title} <span class="arrow" aria-hidden="true">→</span></h3>
-            <p>{p.lead}</p>
-            <span class="meta">abap2ui5.github.io/why</span>
-          </a>
-        );
-        const picked = p.numbers!.map((n) => byNumber.get(n)!);
-        return (
-          <a class="path" href={`${base}for/${p.id}/`}>
-            <span class="who">{p.who}</span>
-            <h3>{p.title} <span class="arrow" aria-hidden="true">→</span></h3>
-            <p>{p.lead}</p>
-            <span class="meta">{picked.length} essays, starting with {picked[0].data.title} and {picked[1].data.title}</span>
-          </a>
-        );
-      })}
-    </div>
-  </section>
 
   <section class="parts" aria-labelledby="all">
     <h2 id="all">All {count}, in reading order</h2>
