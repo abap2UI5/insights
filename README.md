@@ -31,7 +31,7 @@ npm run check     # build + tests, what CI runs
 | `src/content/essays/NN-slug.md` | the essays - one file each, the frontmatter carries title, number, reading order, part, the one-line blurb and the meta description |
 | `src/lib/parts.ts` | the parts and the ways in, in one place |
 | `src/pages/index.astro` | the index |
-| `src/pages/[slug].astro` | an essay, with previous/next |
+| `src/pages/[slug].astro` | an essay, with the other essays of its part and previous/next; also the old addresses in `src/lib/moved.ts` |
 | `src/pages/for/[path].astro` | a reading path |
 | `src/pages/rss.xml.ts` | the feed |
 | `src/layouts/Page.astro` | the document around every page: the family's top line, the policy, the foot |
@@ -41,26 +41,28 @@ npm run check     # build + tests, what CI runs
 
 ## Adding an essay
 
-Create `src/content/essays/40-the-slug.md`:
+Create `src/content/essays/43-the-slug.md`:
 
 ```md
 ---
 title: "The Title, Without the Number"
-number: 40
-order: 39            # the position in reading order; the index, prev/next and the feed follow it
-part: running        # rests | example | how | day | where | running
+number: 43           # the place in reading order, the same as in the file name
+part: running        # rests | how | day | where | running | coda
 blurb: "one line, lower case, no period - the line in the index"
 description: "optional: the meta description, a sentence"
 ---
 
 The text. Links to a sister essay are `/insights/05-ui5-over-the-wire/`,
 links to the manual are absolute (`https://abap2ui5.github.io/docs/...`),
-a diagram goes to `public/` and is referenced as `/insights/40-name.svg`.
+a diagram goes to `public/` and is referenced as `/insights/43-name.svg`.
 ```
 
-The index, the feed, the previous/next links and the part boundaries follow
-from `order` and `part`; `number` is the essay's name, not its place. To put it on a reading path, add the number in
-`src/lib/parts.ts`. `npm run check` tells you if a link points nowhere.
+The number is the essay's place in reading order: the index, the feed, the
+previous/next links and the part boundaries follow from `number` and `part`.
+A new essay anywhere but at the end shifts the numbers - and the slugs - of
+the essays after it; `AGENTS.md` lists what moves with them. To put it on a
+reading path, add the number in `src/lib/parts.ts`. `npm run check` tells you
+if a link points nowhere.
 
 ## No script, no inline style
 

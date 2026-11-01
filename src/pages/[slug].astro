@@ -1,68 +1,24 @@
 ---
-/* One essay. The address is the file name without .md - /insights/05-ui5-over-
- * the-wire/ - so a link that worked under the docs' /advanced/insights/ still
- * names the same essay here. Below the text: the previous and next essay of
- * the series, and at the last essay of a part, where the next part begins. */
-import Page from "../layouts/Page.astro";
-import { getCollection, render } from "astro:content";
-import { PARTS, partById } from "../lib/parts";
+/* One essay. The address is the file name without .md - /insights/06-ui5-over-
+ * the-wire/ - and the number in it is the essay's place in reading order.
+ *
+ * The same route answers the addresses of the earlier numbering
+ * (src/lib/moved.ts) with a page that names the essay's new address and
+ * sends the reader there. */
+import { getCollection } from "astro:content";
+import { MOVED } from "../lib/moved";
+import Essay from "../components/Essay.astro";
+import Moved from "../components/Moved.astro";
 
 export async function getStaticPaths() {
-  const essays = (await getCollection("essays")).sort((a, b) => a.data.order - b.data.order);
-  return essays.map((entry, i) => ({
-    params: { slug: entry.id },
-    props: { entry, prev: essays[i - 1], next: essays[i + 1], total: essays.length },
-  }));
+  const essays = (await getCollection("essays")).sort((a, b) => a.data.number - b.data.number);
+  const bySlug = new Map(essays.map((e) => [e.id, e]));
+  return [
+    ...essays.map((entry) => ({ params: { slug: entry.id }, props: { entry, essays } })),
+    ...Object.entries(MOVED).map(([old, slug]) => ({ params: { slug: old }, props: { moved: bySlug.get(slug)! } })),
+  ];
 }
 
-const base = import.meta.env.BASE_URL;
-const { entry, prev, next, total } = Astro.props;
-const { Content } = await render(entry);
-const part = partById(entry.data.part);
-const nextPart = next && next.data.part !== entry.data.part ? partById(next.data.part) : undefined;
-const words = (entry.body ?? "").split(/\s+/).filter(Boolean).length;
-const minutes = Math.max(2, Math.round(words / 220));
-const title = `#${entry.data.number} ${entry.data.title}`;
-const partIndex = PARTS.findIndex((p) => p.id === part.id) + 1;
+const { entry, essays, moved } = Astro.props;
 ---
-<Page
-  title={`${title} — abap2UI5 Insights`}
-  description={entry.data.description ?? entry.data.blurb}
-  trail={[{ text: "Insights", href: base }, { text: title }]}
-  measure="article"
-  edit={`src/content/essays/${entry.id}.md`}
->
-  <article class="essay">
-    <header>
-      <a class="part-link" href={`${base}#${part.id}`}>Part {partIndex} · {part.title}</a>
-      <h1><span class="num">#{entry.data.number}</span>{entry.data.title}</h1>
-      <p class="standfirst">{entry.data.blurb.charAt(0).toUpperCase() + entry.data.blurb.slice(1)}.</p>
-      <p class="reading">{minutes} min read · {entry.data.order} of {total} in reading order</p>
-    </header>
-    <div class="prose">
-      <Content />
-    </div>
-    {nextPart && (
-      <aside class="part-end">
-        <p>
-          That was the last essay of <strong>{part.title}</strong>. The next part,
-          <strong>{nextPart.title}</strong>, begins with {next && <a href={`${base}${next.id}/`}>#{next.data.number} {next.data.title}</a>}.
-        </p>
-      </aside>
-    )}
-    <nav class="pager" aria-label="Previous and next">
-      {prev && (
-        <a class="prev" href={`${base}${prev.id}/`} rel="prev">
-          <span class="dir">← Previous</span>
-          <span class="t">#{prev.data.number} {prev.data.title}</span>
-        </a>
-      )}
-      {next && (
-        <a class="next" href={`${base}${next.id}/`} rel="next">
-          <span class="dir">Next →</span>
-          <span class="t">#{next.data.number} {next.data.title}</span>
-        </a>
-      )}
-    </nav>
-  </article>
-</Page>
+{moved ? <Moved entry={moved} /> : <Essay entry={entry!} essays={essays!} />}

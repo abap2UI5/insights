@@ -15,10 +15,11 @@ keeps a redirect stub for every old address and one sidebar row leading here.
 
 | Path | Purpose |
 | --- | --- |
-| `src/content/essays/NN-slug.md` | One essay per file. Frontmatter: `title` (without the number), `number`, `order` (reading order), `part`, `blurb` (the line in the index), optional `description` (meta) |
-| `src/lib/parts.ts` | The six parts (id, title, lead) and the ways in (`PATHS`) |
-| `src/pages/index.astro` | The index: opening, the axis figure, the ways in, every essay by part |
-| `src/pages/[slug].astro` | An essay, with its part, reading time and previous/next in reading order |
+| `src/content/essays/NN-slug.md` | One essay per file. Frontmatter: `title` (without the number), `number` (the place in reading order, = `NN`), `part`, `blurb` (the line in the index), optional `description` (meta) |
+| `src/lib/parts.ts` | The parts (id, title, lead) and the ways in (`PATHS`) |
+| `src/lib/moved.ts` | Slugs of an earlier numbering and the essay each now is; each gets a page that refreshes to the new address |
+| `src/pages/index.astro` | The index, one column at the essay measure: opening, the axis figure (HTML, not an image), the ways in, every essay by part |
+| `src/pages/[slug].astro` | The route for an essay (`src/components/Essay.astro`: its part, reading time, the other essays of the part, previous/next) and for a moved address (`src/components/Moved.astro`) |
 | `src/pages/for/[path].astro` | A way in: the essays it picks, in its order |
 | `src/pages/rss.xml.ts` | The feed, in reading order |
 | `src/pages/search.json.ts` | What the family's search finds of this site: one entry per essay (title, line, headings, rarer words). abap2UI5/docs fetches it at build time into the one search index the home page and the playground read; the shape `{ site, url, entries: [{ title, text, headings, terms, url }] }` is the same on every site of the family |
@@ -47,10 +48,16 @@ npm run check    # build + test, what CI runs
   `test/site.test.mjs` lists them; a build that loses one fails. Rename an essay
   only together with its stub in `docs/public/advanced/insights/` of
   abap2UI5/docs, and add the old address there as a stub of its own.
-- **`number` is a name, `order` is the place.** Readers say "#21"; the index,
-  previous/next and the feed follow `order`, which is the position in reading
-  order (#2 reads after #1, #3, #4). A new essay takes the next free number
-  and the `order` where it belongs; shift the `order` of the essays after it.
+- **The number is the place.** Readers say "#21", and #21 is the twenty-first
+  essay in reading order: numbers run 1 to N without a gap, and the file name
+  carries the same number (a test holds both). The index, previous/next and
+  the feed follow it. A new essay therefore shifts the essays after it - which
+  changes their slugs, so do it as one change across the family: rename the
+  files, rewrite the links (`[#N](/insights/NN-slug/)`, link text and target
+  together), add every old slug to `src/lib/moved.ts`, update `ADDRESSES` and
+  `PATHS`, and repoint the docs' stubs in `docs/public/advanced/insights/` and
+  any link in the sister repositories. Renumbering is expensive on purpose:
+  add essays in batches, not one at a time.
 - **A part is data.** Its id is in the frontmatter, its title and lead in
   `src/lib/parts.ts`. A new part is one entry there plus the id in `PART_IDS`.
 - **The case for using it is not made here.** Cost, who runs it, what an
@@ -61,6 +68,14 @@ npm run check    # build + test, what CI runs
   VitePress syntax - `{target="_self"}` and `:::` containers render as text
   here; a test holds the first. A diagram goes to `public/` and is referenced
   as `/insights/name.svg`.
+- **A diagram has a dark variant.** The SVGs share one light palette, and each
+  carries a `<style data-dark="">` block that remaps it to the site's dark
+  tokens under `prefers-color-scheme: dark` - a `<style>` inside an SVG loaded
+  by `<img>` is the image's own document, which the page's policy does not
+  reach. A new diagram uses the same palette and gets the same block; a test
+  checks every SVG for it, and for the attribute without a value that turns
+  an SVG into a broken image. On a phone a diagram keeps its size and scrolls
+  sideways rather than shrinking its labels.
 - **No script, no inline style.** The policy is `script-src 'self';
   style-src 'self'`: no `<script>`, no `on…=` handler, no `style=""` - the test
   holds every page to it. That is why code is highlighted by Prism (token

@@ -1,0 +1,79 @@
+---
+/* An essay page: the header, the text, the other essays of its part, and the
+ * previous and next essay of the series - at the last essay of a part, also
+ * where the next part begins. */
+import Page from "../layouts/Page.astro";
+import { render, type CollectionEntry } from "astro:content";
+import { PARTS, partById } from "../lib/parts";
+
+type Entry = CollectionEntry<"essays">;
+interface Props { entry: Entry; essays: Entry[] }
+const { entry, essays } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const i = essays.findIndex((e) => e.id === entry.id);
+const prev = essays[i - 1];
+const next = essays[i + 1];
+const { Content } = await render(entry);
+const part = partById(entry.data.part);
+const partIndex = PARTS.findIndex((p) => p.id === part.id) + 1;
+const inPart = essays.filter((e) => e.data.part === part.id);
+const nextPart = next && next.data.part !== entry.data.part ? partById(next.data.part) : undefined;
+const words = (entry.body ?? "").split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(2, Math.round(words / 220));
+const title = `#${entry.data.number} ${entry.data.title}`;
+---
+<Page
+  title={`${title} — abap2UI5 Insights`}
+  description={entry.data.description ?? entry.data.blurb}
+  trail={[{ text: "Insights", href: base }, { text: title }]}
+  measure="article"
+  edit={`src/content/essays/${entry.id}.md`}
+>
+  <article class="essay">
+    <header>
+      <a class="part-link" href={`${base}#${part.id}`}>Part {partIndex} · {part.title}</a>
+      <h1><span class="num">#{entry.data.number}</span>{entry.data.title}</h1>
+      <p class="standfirst">{entry.data.blurb.charAt(0).toUpperCase() + entry.data.blurb.slice(1)}.</p>
+      <p class="reading">{minutes} min read · {entry.data.number} of {essays.length}</p>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+    {inPart.length > 1 && (
+      <nav class="in-part" aria-labelledby="in-part">
+        <h2 id="in-part">Part {partIndex} · {part.title}</h2>
+        <ol class="essays compact">
+          {inPart.map((e) => (
+            <li>
+              {e.id === entry.id
+                ? <span class="here" aria-current="true"><span class="n">#{e.data.number}</span><span class="t">{e.data.title}</span></span>
+                : <a href={`${base}${e.id}/`}><span class="n">#{e.data.number}</span><span class="t">{e.data.title}</span></a>}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    {nextPart && next && (
+      <aside class="part-end">
+        <p>
+          That was the last essay of <strong>{part.title}</strong>. The next part,
+          <strong>{nextPart.title}</strong>, begins with <a href={`${base}${next.id}/`}>#{next.data.number} {next.data.title}</a>.
+        </p>
+      </aside>
+    )}
+    <nav class="pager" aria-label="Previous and next">
+      {prev && (
+        <a class="prev" href={`${base}${prev.id}/`} rel="prev">
+          <span class="dir">← Previous</span>
+          <span class="t">#{prev.data.number} {prev.data.title}</span>
+        </a>
+      )}
+      {next && (
+        <a class="next" href={`${base}${next.id}/`} rel="next">
+          <span class="dir">Next →</span>
+          <span class="t">#{next.data.number} {next.data.title}</span>
+        </a>
+      )}
+    </nav>
+  </article>
+</Page>
