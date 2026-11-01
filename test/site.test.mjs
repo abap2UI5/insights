@@ -132,7 +132,19 @@ test("the index lists every essay, every part and the ways in", () => {
 });
 
 test("no VitePress attribute syntax leaks into a page", () => {
-  for (const file of pages) assert.doesNotMatch(read(file), /\{target=/, path.relative(DIST, file));
+  for (const file of pages) assert.doesNotMatch(read(file), /\{\s*(target|width)=/, path.relative(DIST, file));
+});
+
+test("an image that states its size states the size of its SVG", () => {
+  // width/height on <img> set the rendered size: a stale pair scales the
+  // diagram, and its 13px labels with it, up past the text around it
+  for (const file of pages) {
+    for (const [, src, w, h] of read(file).matchAll(/<img src="\/insights\/([^"]+\.svg)"[^>]*? width="(\d+)" height="(\d+)"/g)) {
+      const svg = read(path.join(DIST, src));
+      const [, vw, vh] = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
+      assert.deepEqual([w, h], [vw, vh], `${path.relative(DIST, file)}: ${src}`);
+    }
+  }
 });
 
 test("the links to the manual are absolute and name no page of this site", () => {
