@@ -21,6 +21,7 @@ keeps a redirect stub for every old address and one sidebar row leading here.
 | `src/pages/[slug].astro` | An essay, with its part, reading time and previous/next in reading order |
 | `src/pages/for/[path].astro` | A way in: the essays it picks, in its order |
 | `src/pages/rss.xml.ts` | The feed, in reading order |
+| `src/pages/search.json.ts` | What the family's search finds of this site: one entry per essay (title, line, headings, rarer words). abap2UI5/docs fetches it at build time into the one search index the home page and the playground read; the shape `{ site, url, entries: [{ title, text, headings, terms, url }] }` is the same on every site of the family |
 | `src/layouts/Page.astro` | The document: head, the Content-Security-Policy, the family's top line, the foot |
 | `src/styles/global.css` | The one stylesheet; the family's tokens copied in; light and dark follow the system |
 | `public/` | Font (Inter, self-hosted), logo, icons, the essays' SVGs, `use_cases/` |
