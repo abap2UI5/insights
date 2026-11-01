@@ -95,7 +95,7 @@ code, pre, kbd { font-family: var(--mono); }
  * rule under it - the four sites read as one */
 .topline {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  min-height: 56px; padding-top: 4px; padding-bottom: 4px;
+  min-height: 56px; padding-top: 4px; padding-bottom: 4px; line-height: 1.6;
 }
 .sites { display: flex; align-items: center; flex-wrap: wrap; gap: 0 10px; font-size: 14px; min-width: 0; }
 .sites .brand { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; text-decoration: none; margin-right: 10px; white-space: nowrap; }
@@ -103,22 +103,19 @@ code, pre, kbd { font-family: var(--mono); }
 .sites a:not(.brand) { color: var(--muted); text-decoration: none; }
 .sites a:not(.brand):hover { color: var(--ink); }
 .sites .sep { color: var(--line); }
+/* the current page as on the home page, Samples and Addons: a 2px line in
+ * the accent under it, not a text underline - that one renders thinner */
 .sites [aria-current="page"] {
   color: var(--ink); font-weight: 600;
-  text-decoration: underline; text-decoration-color: var(--brand); text-decoration-thickness: 2px; text-underline-offset: 6px;
+  border-bottom: 2px solid var(--brand); padding-bottom: 1px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60vw;
 }
-.elsewhere { display: flex; gap: 4px; flex: none; }
-.elsewhere a { padding: 6px 10px; border-radius: 8px; color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; }
-.elsewhere a:hover { color: var(--ink); background: var(--bg-alt); }
 @media (max-width: 620px) {
-  /* one line: the brand, the trail with the current page cut short, Docs */
+  /* one line: the brand and the trail, the current page cut short */
   .sites { flex: 1; flex-wrap: nowrap; gap: 0 6px; font-size: 14px; }
   .sites .brand { margin-right: 4px; flex: none; }
   .sites a:not(.brand), .sites .sep { flex: none; }
   .sites [aria-current="page"] { flex: 0 1 auto; min-width: 0; max-width: none; }
-  .elsewhere a { padding: 6px 4px; }
-  .elsewhere a:not(:first-child) { display: none; }
 }
 
 /* ---- the foot: one muted line (CONVENTION §5) --------------------------- */
@@ -131,11 +128,13 @@ code, pre, kbd { font-family: var(--mono); }
 .foot a:hover { color: var(--brand); text-decoration: underline; }
 
 /* ---- the index ------------------------------------------------------------ */
-.hero { padding: 56px 0 24px; max-width: 46rem; }
-.hero h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); }
+/* the heading stands where the sister sites put theirs: 28px under the bar
+ * (24px on a phone), line height 1.15 */
+.hero { padding: 28px 0 24px; max-width: 46rem; }
+.hero h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; }
 .hero p { margin: 0 0 14px; font-size: 17px; line-height: 1.6; }
 .hero p.lead { color: var(--ink); }
-@media (max-width: 620px) { .hero { padding-top: 36px; } .hero p { font-size: 16px; } }
+@media (max-width: 620px) { .hero { padding-top: 24px; } .hero p { font-size: 16px; } }
 
 .axis { margin: 24px 0 8px; padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
 .axis img { display: block; margin: 0 auto; }
@@ -187,11 +186,12 @@ code, pre, kbd { font-family: var(--mono); }
 
 /* ---- an essay --------------------------------------------------------------- */
 .measure-article { max-width: calc(var(--measure) + 48px); }
-article.essay { padding-top: 40px; }
+article.essay { padding-top: 28px; }
+@media (max-width: 620px) { article.essay { padding-top: 24px; } }
 article.essay header { margin-bottom: 36px; }
 article.essay .part-link { display: inline-block; margin: 0 0 14px; color: var(--muted); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; }
 article.essay .part-link:hover { color: var(--brand); }
-article.essay h1 { margin: 0 0 14px; font-size: clamp(28px, 4vw, 40px); }
+article.essay h1 { margin: 0 0 14px; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; }
 article.essay h1 .num { color: var(--muted); font-weight: 500; margin-right: .3em; }
 article.essay .standfirst { margin: 0; font-size: 17px; color: var(--muted); line-height: 1.5; }
 article.essay .reading { margin: 14px 0 0; color: var(--muted); font-size: 13px; }
@@ -242,6 +242,6 @@ article.essay .reading { margin: 14px 0 0; color: var(--muted); font-size: 13px;
 .part-end p { margin: 0; }
 
 @media print {
-  .topline, .skip, .foot, .pager, .part-end, .elsewhere { display: none; }
+  .topline, .skip, .foot, .pager, .part-end { display: none; }
   body { font-size: 11pt; }
 }
