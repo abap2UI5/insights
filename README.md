@@ -72,12 +72,14 @@ grammar is Prism's own.
 
 ## Migration from the docs
 
-`scripts/migrate.mjs` reads `docs/advanced/insights/` of abap2UI5/docs, takes
-the parts, the reading order and the blurbs from its index, writes the essays
-here with a frontmatter and rewritten links, and copies the SVGs. Last run
-against abap2UI5/docs at 88ba749 (#398, the full review of the manual). Since
-the essays left the docs, this repository is their source; the script stays
-for the record.
+`scripts/migrate.mjs` read `docs/advanced/insights/` of abap2UI5/docs, took
+the parts, the reading order and the blurbs from its index, wrote the essays
+here with a frontmatter and rewritten links, and copied the SVGs - last run
+against abap2UI5/docs at 88ba749 (#398). The essays left the docs in
+abap2UI5/docs#399, so there is nothing to run it against any more: this
+repository is their source, and the script stays for the record. The docs keep
+a redirect stub for every old address; `AGENTS.md` says what that means for
+renaming an essay.
 
 ## License
 

@@ -23,6 +23,56 @@ const home = read(path.join(DIST, "index.html"));
 const slugs = fs.readdirSync(ESSAYS).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""));
 const numbers = slugs.map((s) => Number(s.slice(0, 2)));
 
+/* The addresses other sites point at. abap2UI5/docs keeps a redirect stub
+ * for every essay's old address under /docs/advanced/insights/, each naming
+ * the essay here by its slug, and LinkedIn posts carry them. A renamed file
+ * is a dead link somewhere this repository cannot see - rename one only
+ * together with its stub in docs/public/advanced/insights/ over there. */
+const ADDRESSES = [
+  "01-somewhere-on-the-way-to-ui5",
+  "02-the-cost-of-a-screen",
+  "03-one-class-no-programming-model",
+  "04-no-annotation-in-between",
+  "05-ui5-over-the-wire",
+  "06-the-frontend-knows-nothing",
+  "07-one-handler-for-every-app",
+  "08-only-the-changed-part",
+  "09-a-new-instance-on-every-request",
+  "10-swapping-the-view-at-runtime",
+  "11-no-build-no-deploy-no-cache",
+  "12-where-your-own-javascript-goes",
+  "13-four-verbs-every-control",
+  "14-a-classrun-for-the-browser",
+  "15-where-the-selection-screen-went",
+  "16-one-click-one-request",
+  "17-what-the-client-can-do",
+  "18-call-screen-leave-screen",
+  "19-where-f4-went",
+  "20-message-still-works",
+  "21-the-lock-is-gone-by-the-next-click",
+  "22-who-may-start-which-app",
+  "23-100-rows-four-hours-one-request",
+  "24-abap-unit-for-a-screen",
+  "25-when-one-class-is-not-enough",
+  "26-a-tile-like-any-other",
+  "27-one-codebase-702-to-abap-cloud",
+  "28-cloud-ready-is-a-property-of-your-app",
+  "29-when-the-api-is-not-released",
+  "30-on-stack-or-side-by-side",
+  "31-one-app-many-systems",
+  "32-from-its-to-abap2ui5",
+  "33-rap-or-abap2ui5",
+  "34-freestyle-or-abap2ui5",
+  "36-written-for-agents",
+  "37-what-the-client-can-send",
+  "38-how-many-users",
+  "39-upgrading-the-framework",
+];
+
+test("every address the docs' redirect stubs point at is still an essay here", () => {
+  for (const slug of ADDRESSES) assert.ok(fs.existsSync(path.join(DIST, slug, "index.html")), `${BASE}${slug}/ - abap2UI5/docs redirects there`);
+});
+
 test("every essay in src/content/essays has a page at its own slug", () => {
   assert.ok(slugs.length >= 30, `${slugs.length} essays`);
   for (const slug of slugs) assert.ok(fs.existsSync(path.join(DIST, slug, "index.html")), `${BASE}${slug}/`);
