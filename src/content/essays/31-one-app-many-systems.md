@@ -14,7 +14,7 @@ More than one. The app lives on the SAP BTP ABAP Environment and reaches each
 S/4 system through its released APIs, so the connection is configuration rather
 than code.
 
-![One abap2UI5 app on the SAP BTP ABAP Environment serves several S/4HANA systems through their released APIs](/insights/use_cases/saas.svg){ width=90% }
+![One abap2UI5 app on the SAP BTP ABAP Environment serves several S/4HANA systems through their released APIs](/insights/use_cases/saas.svg)
 
 Nothing was added to make this possible. It works because of what the earlier
 articles already established. The frontend is a shell that renders whatever
