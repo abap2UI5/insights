@@ -1,0 +1,29 @@
+---
+/* An address of the earlier numbering: the essay's new address, and a meta
+ * refresh to it - the policy allows no script, and a refresh is no script. */
+import Page from "../layouts/Page.astro";
+import type { CollectionEntry } from "astro:content";
+
+interface Props { entry: CollectionEntry<"essays"> }
+const { entry } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const target = `${base}${entry.id}/`;
+const title = `#${entry.data.number} ${entry.data.title}`;
+---
+<Page
+  title={`${title} — abap2UI5 Insights`}
+  description={entry.data.description ?? entry.data.blurb}
+  trail={[{ text: "Insights", href: base }, { text: title }]}
+  measure="article"
+  redirect={target}
+>
+  <article class="essay">
+    <header>
+      <h1><span class="num">#{entry.data.number}</span>{entry.data.title}</h1>
+      <p class="standfirst">
+        The essays are numbered in reading order now, and this one moved with it:{" "}
+        <a href={target}>{new URL(target, Astro.site).href}</a>
+      </p>
+    </header>
+  </article>
+</Page>

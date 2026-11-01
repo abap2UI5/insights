@@ -1,7 +1,6 @@
 ---
 title: "What the Client Can Do"
 number: 17
-order: 17
 part: day
 blurb: "the whole API surface, by shape"
 description: "The whole of z2ui5_if_client by shape - show a screen, bind data, read the event, navigate, message, follow-up actions - before knowing it by name."

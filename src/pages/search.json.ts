@@ -17,7 +17,7 @@ import { partById } from "../lib/parts";
 
 export const GET: APIRoute = async ({ site }) => {
   const root = new URL(import.meta.env.BASE_URL, site).href;
-  const essays = (await getCollection("essays")).sort((a, b) => a.data.order - b.data.order);
+  const essays = (await getCollection("essays")).sort((a, b) => a.data.number - b.data.number);
   const wordsOf = (body: string) =>
     new Set(
       body

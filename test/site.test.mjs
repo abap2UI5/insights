@@ -27,50 +27,73 @@ const numbers = slugs.map((s) => Number(s.slice(0, 2)));
  * for every essay's old address under /docs/advanced/insights/, each naming
  * the essay here by its slug, and LinkedIn posts carry them. A renamed file
  * is a dead link somewhere this repository cannot see - rename one only
- * together with its stub in docs/public/advanced/insights/ over there. */
+ * together with its stub in docs/public/advanced/insights/ over there, and
+ * keep the old slug in src/lib/moved.ts. */
 const ADDRESSES = [
-  "01-somewhere-on-the-way-to-ui5",
-  "02-the-cost-of-a-screen",
+  "01-the-cost-of-a-screen",
+  "02-somewhere-on-the-way-to-ui5",
   "03-one-class-no-programming-model",
   "04-no-annotation-in-between",
-  "05-ui5-over-the-wire",
-  "06-the-frontend-knows-nothing",
-  "07-one-handler-for-every-app",
-  "08-only-the-changed-part",
-  "09-a-new-instance-on-every-request",
-  "10-swapping-the-view-at-runtime",
-  "11-no-build-no-deploy-no-cache",
-  "12-where-your-own-javascript-goes",
-  "13-four-verbs-every-control",
-  "14-a-classrun-for-the-browser",
-  "15-where-the-selection-screen-went",
-  "16-one-click-one-request",
+  "05-a-classrun-for-the-browser",
+  "06-ui5-over-the-wire",
+  "07-one-click-one-request",
+  "08-the-frontend-knows-nothing",
+  "09-one-handler-for-every-app",
+  "10-only-the-changed-part",
+  "11-a-new-instance-on-every-request",
+  "12-swapping-the-view-at-runtime",
+  "13-where-the-selection-screen-went",
+  "14-four-verbs-every-control",
+  "15-where-your-own-javascript-goes",
+  "16-no-build-no-deploy-no-cache",
   "17-what-the-client-can-do",
   "18-call-screen-leave-screen",
-  "19-where-f4-went",
-  "20-message-still-works",
-  "21-the-lock-is-gone-by-the-next-click",
-  "22-who-may-start-which-app",
-  "23-100-rows-four-hours-one-request",
-  "24-abap-unit-for-a-screen",
-  "25-when-one-class-is-not-enough",
-  "26-a-tile-like-any-other",
-  "27-one-codebase-702-to-abap-cloud",
-  "28-cloud-ready-is-a-property-of-your-app",
-  "29-when-the-api-is-not-released",
-  "30-on-stack-or-side-by-side",
-  "31-one-app-many-systems",
-  "32-from-its-to-abap2ui5",
-  "33-rap-or-abap2ui5",
-  "34-freestyle-or-abap2ui5",
-  "36-written-for-agents",
-  "37-what-the-client-can-send",
-  "38-how-many-users",
-  "39-upgrading-the-framework",
+  "20-where-f4-went",
+  "21-message-still-works",
+  "23-the-lock-is-gone-by-the-next-click",
+  "25-who-may-start-which-app",
+  "26-100-rows-four-hours-one-request",
+  "27-abap-unit-for-a-screen",
+  "28-when-one-class-is-not-enough",
+  "29-a-tile-like-any-other",
+  "30-from-its-to-abap2ui5",
+  "31-one-codebase-702-to-abap-cloud",
+  "32-cloud-ready-is-a-property-of-your-app",
+  "33-when-the-api-is-not-released",
+  "34-on-stack-or-side-by-side",
+  "35-one-app-many-systems",
+  "36-rap-or-abap2ui5",
+  "37-freestyle-or-abap2ui5",
+  "38-what-the-client-can-send",
+  "40-how-many-users",
+  "41-upgrading-the-framework",
+  "42-written-for-agents",
 ];
 
 test("every address the docs' redirect stubs point at is still an essay here", () => {
   for (const slug of ADDRESSES) assert.ok(fs.existsSync(path.join(DIST, slug, "index.html")), `${BASE}${slug}/ - abap2UI5/docs redirects there`);
+});
+
+test("the number is the place in reading order: 1 to N, no gap, as the file name says", () => {
+  const sorted = [...numbers].sort((x, y) => x - y);
+  assert.deepEqual(sorted, sorted.map((_, i) => i + 1), "numbers run 1..N without a gap");
+  for (const slug of slugs) {
+    const fm = fs.readFileSync(path.join(ESSAYS, `${slug}.md`), "utf8").match(/^number: (\d+)$/m);
+    assert.equal(Number(fm[1]), Number(slug.slice(0, 2)), `${slug}: frontmatter number`);
+  }
+});
+
+test("an address of the earlier numbering sends the reader on to the same essay", () => {
+  const moved = fs.readFileSync(path.join(import.meta.dirname, "..", "src", "lib", "moved.ts"), "utf8");
+  const pairs = [...moved.matchAll(/"(\d\d-[a-z0-9-]+)": "(\d\d-[a-z0-9-]+)"/g)];
+  assert.ok(pairs.length > 0);
+  for (const [, old, slug] of pairs) {
+    assert.ok(!slugs.includes(old), `${old} is an essay again - drop it from moved.ts`);
+    assert.ok(slugs.includes(slug), `${old} -> ${slug}, which is not an essay`);
+    const html = read(path.join(DIST, old, "index.html"));
+    assert.match(html, new RegExp(`http-equiv="refresh" content="0; url=${BASE}${slug}/"`), old);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://abap2ui5\\.github\\.io${BASE}${slug}/">`), old);
+  }
 });
 
 test("every essay in src/content/essays has a page at its own slug", () => {
@@ -108,7 +131,7 @@ test("everything a page loads or links locally is in dist/, under the base", () 
 });
 
 test("ABAP is highlighted: Prism tokens, not plain text", () => {
-  const essay = read(path.join(DIST, "01-somewhere-on-the-way-to-ui5", "index.html"));
+  const essay = read(path.join(DIST, "02-somewhere-on-the-way-to-ui5", "index.html"));
   assert.match(essay, /class="language-abap"/);
   assert.match(essay, /<span class="token keyword">/);
 });
@@ -123,6 +146,7 @@ test("the family's top line: the brand leads home, the breadcrumb marks the page
 
 test("the index lists every essay, every part and the ways in", () => {
   assert.equal((home.match(/class="essays"/g) || []).length, 6, "six parts");
+  assert.doesNotMatch(home, /<img src="[^"]+\.svg"/, "the axis is HTML, not a picture");
   for (const n of numbers) assert.match(home, new RegExp(`<span class="n">#${n}</span>`), `#${n}`);
   assert.match(home, /class="path" href="https:\/\/abap2ui5\.github\.io\/why\/"/, "the case for using it is the why-site's");
   for (const p of ["developer", "architect"]) {
@@ -173,5 +197,20 @@ test("the search feed: every essay once, at its own address, for the family's in
     assert.ok(slugs.includes(slug), `${e.url} is an essay`);
     const html = read(path.join(DIST, slug, "index.html"));
     for (const [, anchor] of e.headings) assert.match(html, new RegExp(`id="${anchor}"`), `${e.url}#${anchor}`);
+  }
+});
+
+test("every diagram follows the reader's colour scheme and is well-formed XML", () => {
+  const svgs = walk(DIST).filter((f) => f.endsWith(".svg"));
+  assert.ok(svgs.length > 10);
+  for (const file of svgs) {
+    const svg = read(file);
+    const name = path.relative(DIST, file);
+    assert.match(svg, /<style data-dark="">@media \(prefers-color-scheme:dark\)/, `${name}: no dark variant`);
+    // XML has no attribute without a value - the one slip that turns a diagram into a broken image
+    for (const [tag] of svg.matchAll(/<[a-zA-Z][^>]*>/g)) {
+      const bare = tag.replace(/"[^"]*"/g, '""').replace(/'[^']*'/g, "''");
+      assert.doesNotMatch(bare, /\s[\w:-]+(?=[\s/>])/, `${name}: an attribute without a value in ${tag.slice(0, 60)}`);
+    }
   }
 });

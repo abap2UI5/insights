@@ -1,7 +1,6 @@
 ---
 title: "CALL SCREEN, LEAVE SCREEN"
 number: 18
-order: 18
 part: day
 blurb: "the app stack, sub-apps and popups"
 description: "The app stack - nav_app_call( ) pushes an instance, nav_app_leave( ) pops it, get_app_prev( ) hands the caller the sub-app with its typed attributes - and where popups and the launchpad fit."

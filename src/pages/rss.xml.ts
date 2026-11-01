@@ -10,7 +10,7 @@ const esc = (s: string) =>
 export const GET: APIRoute = async ({ site }) => {
   const base = import.meta.env.BASE_URL;
   const root = new URL(base, site).href;
-  const essays = (await getCollection("essays")).sort((a, b) => a.data.order - b.data.order);
+  const essays = (await getCollection("essays")).sort((a, b) => a.data.number - b.data.number);
   const items = essays
     .map(
       (e) => `    <item>

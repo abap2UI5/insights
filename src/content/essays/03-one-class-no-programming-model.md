@@ -1,7 +1,6 @@
 ---
 title: "One Class, No Programming Model"
 number: 3
-order: 2
 part: rests
 blurb: "every API the system has, from BAPI to EML, behind one unchanged UI class"
 description: "The one interface an abap2UI5 app implements, and why three save handlers - EML, a MODIFY, a BAPI - sit behind one unchanged UI class."
@@ -29,7 +28,7 @@ ENDINTERFACE.
 That is it. abap2UI5 calls `main( )` on every roundtrip, and your class decides
 what to display and how to react: the view is built when
 `check_on_navigated( )` is true, an event changes attributes and returns —
-the shape [#16](/insights/16-one-click-one-request/) describes.
+the shape [#7](/insights/07-one-click-one-request/) describes.
 Activate it, append `?app_start=zcl_my_app` to your service URL, and there it
 is — about as ceremonious as pressing F8.
 
@@ -204,6 +203,6 @@ Where a strict programming model fits, use it — picking one deliberately is
 good engineering. abap2UI5 asks for nothing beyond the signature of `main( )`,
 so it fits the rest: the system not on the newest release, the logic that does
 not match the shape a model has in mind, and the screen from
-[the last article](/insights/02-the-cost-of-a-screen/) whose whole
+[#1](/insights/01-the-cost-of-a-screen/) whose whole
 backend is one class. Where it sits next to RAP is
-[#33](/insights/33-rap-or-abap2ui5/).
+[#36](/insights/36-rap-or-abap2ui5/).

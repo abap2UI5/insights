@@ -1,7 +1,6 @@
 ---
 title: "No Annotation in Between"
 number: 4
-order: 3
 part: rests
 blurb: "the vocabulary is the UI5 control library, all of it"
 description: "Why the vocabulary of an abap2UI5 view is the UI5 control library itself - every control, at the UI5 version the bootstrap names - shown with a sap.m.Wizard."
@@ -23,7 +22,7 @@ browser is a UI5 XML view, so the vocabulary is the UI5 control library itself
 — all of it, at the UI5 version the
 [bootstrap](https://abap2ui5.github.io/docs/configuration/setup/ui5_bootstrapping) names, which is a
 configuration decision of the installation rather than a property of the SAP
-release ([#27](/insights/27-one-codebase-702-to-abap-cloud/)).
+release ([#31](/insights/31-one-codebase-702-to-abap-cloud/)).
 
 Which is why a control nobody generates is not a special case. Take a
 three-step wizard, a control that is right there in `sap.m` and almost never
@@ -128,5 +127,5 @@ be said for most framework knowledge.
 The price is on the same page, and it is not small. Nothing writes the layout:
 a list report a few annotations would have described is here a table built
 control by control. Reaching every control is not the same as being handed one,
-and [#33](/insights/33-rap-or-abap2ui5/) is about when the generated
+and [#36](/insights/36-rap-or-abap2ui5/) is about when the generated
 list report is the better deal.
