@@ -131,7 +131,6 @@ code, pre, kbd { font-family: var(--mono); }
 
 /* ---- the index ------------------------------------------------------------ */
 .hero { padding: 56px 0 24px; max-width: 46rem; }
-.hero .kicker { margin: 0 0 12px; color: var(--muted); font-size: 14px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
 .hero h1 { margin: 0 0 18px; font-size: clamp(34px, 5vw, 52px); }
 .hero p { margin: 0 0 14px; font-size: 19px; line-height: 1.6; }
 .hero p.lead { color: var(--ink); }
