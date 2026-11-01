@@ -144,15 +144,10 @@ test("the family's top line: the brand leads home, the breadcrumb marks the page
   }
 });
 
-test("the index lists every essay, every part and the ways in", () => {
+test("the index lists every essay and every part", () => {
   assert.equal((home.match(/class="essays"/g) || []).length, 6, "six parts");
   assert.doesNotMatch(home, /<img src="[^"]+\.svg"/, "the axis is HTML, not a picture");
   for (const n of numbers) assert.match(home, new RegExp(`<span class="n">#${n}</span>`), `#${n}`);
-  assert.match(home, /class="path" href="https:\/\/abap2ui5\.github\.io\/why\/"/, "the case for using it is the why-site's");
-  for (const p of ["developer", "architect"]) {
-    assert.match(home, new RegExp(`href="${BASE}for/${p}/"`));
-    assert.ok(fs.existsSync(path.join(DIST, "for", p, "index.html")), `${BASE}for/${p}/`);
-  }
 });
 
 test("no VitePress attribute syntax leaks into a page", () => {

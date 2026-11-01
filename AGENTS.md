@@ -16,11 +16,10 @@ keeps a redirect stub for every old address and one sidebar row leading here.
 | Path | Purpose |
 | --- | --- |
 | `src/content/essays/NN-slug.md` | One essay per file. Frontmatter: `title` (without the number), `number` (the place in reading order, = `NN`), `part`, `blurb` (the line in the index), optional `description` (meta) |
-| `src/lib/parts.ts` | The parts (id, title, lead) and the ways in (`PATHS`) |
+| `src/lib/parts.ts` | The parts (id, title, lead) |
 | `src/lib/moved.ts` | Slugs of an earlier numbering and the essay each now is; each gets a page that refreshes to the new address |
-| `src/pages/index.astro` | The index, one column at the essay measure: opening, the axis figure (HTML, not an image), the ways in, every essay by part |
+| `src/pages/index.astro` | The index, one column at the essay measure: opening, the axis figure (HTML, not an image), every essay by part |
 | `src/pages/[slug].astro` | The route for an essay (`src/components/Essay.astro`: its part, reading time, the other essays of the part, previous/next) and for a moved address (`src/components/Moved.astro`) |
-| `src/pages/for/[path].astro` | A way in: the essays it picks, in its order |
 | `src/pages/rss.xml.ts` | The feed, in reading order |
 | `src/pages/search.json.ts` | What the family's search finds of this site: one entry per essay (title, line, headings, rarer words). abap2UI5/docs fetches it at build time into the one search index the home page and the playground read; the shape `{ site, url, entries: [{ title, text, headings, terms, url }] }` is the same on every site of the family |
 | `src/layouts/Page.astro` | The document: head, the Content-Security-Policy, the family's top line, the foot |
@@ -54,15 +53,13 @@ npm run check    # build + test, what CI runs
   the feed follow it. A new essay therefore shifts the essays after it - which
   changes their slugs, so do it as one change across the family: rename the
   files, rewrite the links (`[#N](/insights/NN-slug/)`, link text and target
-  together), add every old slug to `src/lib/moved.ts`, update `ADDRESSES` and
-  `PATHS`, and repoint the docs' stubs in `docs/public/advanced/insights/` and
+  together), add every old slug to `src/lib/moved.ts`, update `ADDRESSES`, and repoint the docs' stubs in `docs/public/advanced/insights/` and
   any link in the sister repositories. Renumbering is expensive on purpose:
   add essays in batches, not one at a time.
 - **A part is data.** Its id is in the frontmatter, its title and lead in
   `src/lib/parts.ts`. A new part is one entry there plus the id in `PART_IDS`.
 - **The case for using it is not made here.** Cost, who runs it, what an
-  organization keeps, the decision - that is https://abap2ui5.github.io/why/,
-  and the third way in leads there. An essay links it, it does not repeat it.
+  organization keeps, the decision - that is https://abap2ui5.github.io/why/. An essay links it, it does not repeat it.
 - **Links.** A sister essay: `/insights/NN-slug/`. The manual and every other
   site of the family: absolute (`https://abap2ui5.github.io/docs/...`). No
   VitePress syntax - `{target="_self"}` and `:::` containers render as text
