@@ -133,14 +133,15 @@ code, pre, kbd { font-family: var(--mono); }
  * left edge and one width. The heading stands where the sister sites put
  * theirs: 28px under the bar (24px on a phone), line height 1.15 */
 .measure-index > * { max-width: var(--measure); }
-.hero { padding: 28px 0 24px; }
+.hero { padding: 28px 0 0; }
+.hero p:last-child { margin-bottom: 0; }
 .hero h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; }
 .hero p { margin: 0 0 14px; font-size: 17px; line-height: 1.6; }
 .hero p.lead { color: var(--ink); }
 @media (max-width: 620px) { .hero { padding-top: 24px; } .hero p { font-size: 16px; } }
 
 /* the axis, in HTML: three columns side by side, stacked on a phone */
-.axis { margin: 24px 0 8px; }
+.axis { margin: 28px 0 0; }
 .axis-card { padding: 22px 24px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-alt); }
 .axis-head { margin: 0 0 16px; color: var(--ink); font-size: 13.5px; font-weight: 700; }
 .axis-cols { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
@@ -150,7 +151,6 @@ code, pre, kbd { font-family: var(--mono); }
 .axis-what { color: var(--muted); font-size: 13px; line-height: 1.4; }
 .axis-cols .hit .axis-name { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-strong); font-weight: 650; }
 .axis-cols .hit .axis-when { color: var(--brand-strong); }
-.axis-foot { margin: 18px 0 0; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
 .axis figcaption { margin-top: 10px; text-align: center; color: var(--muted); font-size: 14px; }
 @media (max-width: 620px) {
   .axis-card { padding: 18px 16px 14px; }
@@ -160,13 +160,12 @@ code, pre, kbd { font-family: var(--mono); }
   .axis-when { margin-top: 0; }
 }
 
-.parts h2 { font-size: 13px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
-
+.after-axis { margin: 16px 0 0; }
 .parts { margin: 56px 0 0; }
 .part { margin: 0 0 48px; }
 .part header { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; margin-bottom: 16px; }
 .part .part-no { color: var(--muted); font-size: 12.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
-.part h3 { margin: 0; font-size: 22px; }
+.part h2 { margin: 0; font-size: 22px; }
 .part .lead { margin: 0; color: var(--muted); }
 /* an essay in a list: the number in its own column, the title, the line
  * under it - two lines at the measure rather than three columns */
@@ -181,8 +180,6 @@ code, pre, kbd { font-family: var(--mono); }
 .essays .n { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 14px; }
 .essays .t { color: var(--ink); font-weight: 600; }
 .essays .d { color: var(--muted); font-size: 14px; grid-column: 2; }
-.origin { margin: 16px 0 0; color: var(--muted); font-size: 14px; }
-.origin.start { margin: -4px 0 40px; }
 
 /* ---- an essay --------------------------------------------------------------- */
 /* same frame and left edge as the index; only the column is narrow */

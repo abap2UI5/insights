@@ -1,19 +1,16 @@
 ---
-/* The index: what the series is, the one axis everything turns on, the ways
- * parts with every essay in reading order. One column at the
- * measure of an essay, so the index and an essay share one left edge and one
- * width. The text of the opening follows the docs' former index page. */
+/* The index: what the series is, the one axis everything turns on, and the
+ * essays by part, in reading order - nothing else. One column at the measure
+ * of an essay, so the index and an essay share one left edge and one width. */
 import Page from "../layouts/Page.astro";
 import { getCollection } from "astro:content";
 import { PARTS } from "../lib/parts";
 
 const base = import.meta.env.BASE_URL;
 const essays = (await getCollection("essays")).sort((a, b) => a.data.number - b.data.number);
-const byNumber = new Map(essays.map((e) => [e.data.number, e]));
 const href = (e: (typeof essays)[number]) => `${base}${e.id}/`;
 const count = essays.length;
 const description = `The ideas behind abap2UI5 in ${count} short technical essays: what it rests on, how it works under the app, a working day with it, where it belongs in the landscape and what running it takes.`;
-const [first, wire, click] = [byNumber.get(1)!, byNumber.get(6)!, byNumber.get(7)!];
 /* the axis: three ways to put a UI5 screen in front of a user, by the moment
  * the view is fixed - HTML rather than a picture, so it reflows on a phone
  * and follows the reader's colour scheme */
@@ -53,32 +50,22 @@ const AXIS = [
           </li>
         ))}
       </ol>
-      <p class="axis-foot">All three render in the browser, with the same controls. This is the axis the rest follows from.</p>
     </div>
     <figcaption>One axis: when the definition of the screen stops being changeable.</figcaption>
   </figure>
   <p class="after-axis">
     Three ways to put a UI5 screen in front of a user on an ABAP stack, all three rendering in the
-    browser with the same control library. <strong>UI5 Freestyle</strong> fixes the view at build
-    time, as a file in a frontend project. <strong>RAP with Fiori Elements</strong> fixes it at
-    activation time, as annotations on CDS. <strong>abap2UI5</strong> fixes it when the request is
-    answered, as a string an ABAP class produced for this request — and the next request may answer
-    differently. Everything else follows from where the view sits.
+    browser with the same controls. They differ in one thing: when the view is fixed. In abap2UI5 it
+    is a string an ABAP class produces for this request — and the next request may answer
+    differently. Everything else follows from that.
   </p>
 
-  <section class="parts" aria-labelledby="all">
-    <h2 id="all">All {count}, in reading order</h2>
-    <p class="origin start">
-      New here? Start with <a href={href(first)}>#1 {first.data.title}</a> — a whole app on one
-      page — then <a href={href(wire)}>#6 {wire.data.title}</a>, the one idea everything else is a
-      consequence of, and <a href={href(click)}>#7 {click.data.title}</a>, the mental model every
-      app is written against.
-    </p>
+  <section class="parts" aria-label="The essays, in reading order">
     {PARTS.map((part, i) => (
       <section class="part" id={part.id}>
         <header>
           <span class="part-no">Part {i + 1}</span>
-          <h3>{part.title}</h3>
+          <h2>{part.title}</h2>
           <p class="lead">{part.lead}</p>
         </header>
         <ol class="essays">
@@ -92,13 +79,6 @@ const AXIS = [
             </li>
           ))}
         </ol>
-        {part.id === "how" && (
-          <p class="origin">
-            These grew out of{" "}
-            <a href="https://community.sap.com/t5/technology-blog-posts-by-members/abap2ui5-7-technical-background-under-the-hood-of-abap2ui5/ba-p/13566459">Under the Hood of abap2UI5</a>{" "}
-            on the SAP Community, the long version in one piece.
-          </p>
-        )}
       </section>
     ))}
   </section>
